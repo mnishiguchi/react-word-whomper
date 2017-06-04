@@ -1,49 +1,37 @@
 import React from 'react'
-import Layout from './Layout'
 import _ from 'lodash'
+
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.css'
 
+import Layout from './Layout'
+import {InputTextDisplay, LetterSelector} from './components'
+
 window._ = _ // To play with lodash in console
 
-const Letter = ({ letter, onClick }) => {
-  return (
-    <div className="Letter" onClick={onClick}>{letter}</div>
-  )
-}
+function buildLetterListFromWords(words) {
+  // A set of chars
+  const charSet = _.uniq(_.flatten(words.map(l => l.split(''))))
 
-const InputTextDisplay = ({ letters, onSubmit, onUndo }) => {
-  return (
-    <div className="InputTextDisplay">
-      <div className="letters">
-        {
-          letters.map((letter, i) => {
-            return <span className="letter" key={i}>{letter}</span>
-          })
-        }
-      </div>
-      <div className="buttons">
-        <span>
-          <div className="btn btn-primary" onClick={onSubmit}>Submit</div>
-          <div className="btn btn-secondary" onClick={onUndo}>Undo</div>
-        </span>
-      </div>
-    </div>
-  )
-}
+  // A list of occurrences for all the words
+  const charOccurrences = words.map(word => {
+    return _.countBy(word.split(''))
+  })
 
-const LetterSelector = ({ letters, onLetterSelect }) => {
-  return (
-    <div className="LetterSelector">
-      <div className="letters">
-        {
-          letters.filter(e => e).map((letter, i) => {
-            return <Letter key={i} letter={letter} onClick={e => onLetterSelect(letter)} />
-          })
-        }
-      </div>
-    </div>
-  )
+  // A list of max counts for each letter
+  const charMaxCounts = charSet.map(char => {
+    return [char, _.maxBy(charOccurrences, char)[char]]
+  })
+
+  // Create a letter list.
+  let letterList = []
+  charMaxCounts.map(entry => {
+    for (let i = 0; i < entry[1]; i++) {
+      letterList.push(entry[0])
+    }
+  })
+
+  return _.shuffle(letterList)
 }
 
 
@@ -61,8 +49,8 @@ class App extends React.PureComponent {
   constructor(props) {
     super(props)
 
-    // Constant
-    this.LETTERS = ['a', 'b', 'c'] // TODO - compute from the words
+    // Initialize the letter list for the game play based on the words passed in as a prop.
+    this.LETTERS = buildLetterListFromWords(props.words)
 
     this.state = {
       selectedLetters: [],
@@ -94,7 +82,7 @@ class App extends React.PureComponent {
   onLetterSelect(letter) {
     this.setState((prevState, props) => {
       const selectedLetters = prevState.selectedLetters.concat(letter)
-      const remainingLetters = _.difference(this.LETTERS, selectedLetters).slice(0)
+      const remainingLetters = this.computeRemainingLetters(selectedLetters)
       return { selectedLetters, remainingLetters }
     })
   }
@@ -102,13 +90,29 @@ class App extends React.PureComponent {
   onUndo() {
     this.setState((prevState, props) => {
       const selectedLetters = prevState.selectedLetters.slice(0, -1)
-      const remainingLetters = _.difference(this.LETTERS, selectedLetters).slice(0)
+      const remainingLetters = this.computeRemainingLetters(selectedLetters)
       return { selectedLetters, remainingLetters }
     })
   }
 
+  // TODO: Trigger the evaluation of the selected word
   onSubmit() {
-    alert('onSubmit')
+    this.setState((prevState, props) => {
+      const selectedLetters = []
+      const remainingLetters = this.computeRemainingLetters(selectedLetters)
+      return { selectedLetters, remainingLetters }
+    })
+  }
+
+  computeRemainingLetters(selectedLetters) {
+    let remainingLetters = this.LETTERS.slice(0)
+
+    selectedLetters.forEach(letter => {
+      const index = remainingLetters.findIndex(e => e === letter) // index of first occurrence
+      remainingLetters.splice(index, 1)                           // destructively remove an element at that index
+    })
+
+    return remainingLetters
   }
 }
 
