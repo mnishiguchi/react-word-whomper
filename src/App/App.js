@@ -1,8 +1,8 @@
 import React from 'react'
 import _ from 'lodash'
 
-import './App.css'
 import 'bootstrap/dist/css/bootstrap.css'
+import './App.css'
 
 import Layout from './Layout'
 import {InputTextDisplay, LetterSelector} from './components'
@@ -39,11 +39,7 @@ class App extends React.PureComponent {
 
   static defaultProps = {
     // Hardcode for now
-    words: [
-      'law',
-      'lea',
-      'little',
-    ]
+    words: ['bed', 'bee', 'deb', 'dew', 'ewe', 'see', 'sew', 'web', 'wed', 'wee', 'beds', 'bees', 'debs', 'ewes', 'seed', 'webs', 'weds', 'weed', 'dweeb', 'sewed', 'weeds', 'dweebs']
   }
 
   constructor(props) {
@@ -59,6 +55,7 @@ class App extends React.PureComponent {
 
     this.onSubmit = this.onSubmit.bind(this)
     this.onUndo = this.onUndo.bind(this)
+    this.onMix = this.onMix.bind(this)
     this.onLetterSelect = this.onLetterSelect.bind(this)
   }
 
@@ -66,10 +63,16 @@ class App extends React.PureComponent {
     return (
       <Layout>
         <section>
-          <InputTextDisplay letters={this.state.selectedLetters} onSubmit={this.onSubmit} onUndo={this.onUndo} />
+          <InputTextDisplay letters={this.state.selectedLetters} />
         </section>
         <section>
-          <LetterSelector letters={this.state.remainingLetters} onLetterSelect={this.onLetterSelect} />
+          <LetterSelector
+            letters={this.state.remainingLetters}
+            onLetterSelect={this.onLetterSelect}
+            onSubmit={this.onSubmit}
+            onUndo={this.onUndo}
+            onMix={this.onMix}
+          />
         </section>
       </Layout>
     )
@@ -84,6 +87,14 @@ class App extends React.PureComponent {
       const selectedLetters = prevState.selectedLetters.concat(letter)
       const remainingLetters = this.computeRemainingLetters(selectedLetters)
       return { selectedLetters, remainingLetters }
+    })
+  }
+
+  onMix() {
+    this.LETTERS = _.shuffle(this.LETTERS)
+    this.setState((prevState, props) => {
+      const remainingLetters = this.computeRemainingLetters(prevState.selectedLetters)
+      return { remainingLetters }
     })
   }
 

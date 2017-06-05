@@ -1,10 +1,13 @@
 import React from 'react'
-import logo from '../assets/logo.svg'
 
 const Header = () => (
-  <div className="App-header">
-    <img src={logo} className="App-logo" alt="logo" />
-    <h2>React Word Whomper</h2>
+  <div style={{
+    backgroundColor: '#333',
+    height: '45px',
+    padding: '10px',
+    color: 'white',
+  }}>
+    <div>React Word Whomper</div>
   </div>
 )
 
