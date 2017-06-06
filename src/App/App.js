@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './App.css'
 
 import Layout from './Layout'
-import {InputTextDisplay, LetterSelector} from './components'
+import {AnswerList, InputTextDisplay, LetterSelector} from './components/index'
 
 window._ = _ // To play with lodash in console
 
@@ -25,7 +25,7 @@ function buildLetterListFromWords(words) {
 
   // Create a letter list.
   let letterList = []
-  charMaxCounts.map(entry => {
+  charMaxCounts.forEach(entry => {
     for (let i = 0; i < entry[1]; i++) {
       letterList.push(entry[0])
     }
@@ -49,6 +49,7 @@ class App extends React.PureComponent {
     this.LETTERS = buildLetterListFromWords(props.words)
 
     this.state = {
+      words: props.words.map(word => { return { word: word, isVisible: false } }),
       selectedLetters: [],
       remainingLetters: this.LETTERS
     }
@@ -60,8 +61,13 @@ class App extends React.PureComponent {
   }
 
   render() {
+    console.info(this.state)
+
     return (
       <Layout>
+        <section>
+          <AnswerList words={this.state.words}   />
+        </section>
         <section>
           <InputTextDisplay letters={this.state.selectedLetters} />
         </section>
