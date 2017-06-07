@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Letter = ({ letter, onClick }) => {
+const LetterCard = ({ letter, onClick }) => {
   return (
     <div onClick={onClick} style={{
       display: 'inline-block',
@@ -10,18 +10,16 @@ const Letter = ({ letter, onClick }) => {
       margin: '2px',
       background: '#999',
       border: '1px solid #333',
-      fontSize: '2rem',
-      textTransform: 'uppercase',
     }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-      }}>
-        <span>{letter}</span>
-      </div>
+        fontSize: '2rem',
+        textTransform: 'uppercase',
+      }}>{letter}</div>
     </div>
   )
 }
 
-export default Letter
+export default LetterCard

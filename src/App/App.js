@@ -76,7 +76,7 @@ class App extends React.PureComponent {
     return (
       <Layout>
         <section>
-          <AnswerList words={this.state.words}   />
+          <AnswerList words={this.state.words} />
         </section>
         <section>
           <InputTextDisplay letters={this.state.selectedLetters} />
@@ -92,10 +92,6 @@ class App extends React.PureComponent {
         </section>
       </Layout>
     )
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    console.info('componentDidUpdate')
   }
 
   onLetterSelect(letter) {

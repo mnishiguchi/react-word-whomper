@@ -1,13 +1,13 @@
 import React from 'react'
 
-import Letter from './Letter'
+import LetterCard from './LetterCard'
 
 const LetterSelector = ({ letters, onLetterSelect, onMix, onSubmit, onUndo }) => {
   return (
     <div>
       <div className="letters" style={{ minHeight: '105px', background: '#ddd' }}>
         {
-          letters.map((letter, i) => <Letter key={i} letter={letter} onClick={e => onLetterSelect(letter)} />)
+          letters.map((letter, i) => <LetterCard key={i} letter={letter} onClick={e => onLetterSelect(letter)} />)
         }
       </div>
       <div className="buttons" style={{ marginTop: '1rem', display: 'flex' }}>

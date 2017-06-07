@@ -1,12 +1,12 @@
 import React from 'react'
 
-import Letter from './Letter'
+import LetterCard from './LetterCard'
 
 const InputTextDisplay = ({ letters }) => {
   return (
     <div style={{ minHeight: '105px', background: '#ddd' }}>
       {
-        letters.map((letter, i) => <Letter key={i} letter={letter} />)
+        letters.map((letter, i) => <LetterCard key={i} letter={letter} />)
       }
     </div>
   )
