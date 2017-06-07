@@ -1,6 +1,5 @@
 main {
-  min-height: 80vh;
-  max-width: 654px !important;
+  width: 654px !important;
 }
 
 section {
@@ -9,4 +8,12 @@ section {
 
 .btn {
   border-radius: 0;
+}
+
+.InputTextDisplay .LetterCard {
+  color: #7d49b0;
+}
+
+.LetterSelector .LetterCard {
+  color: #834e00;
 }

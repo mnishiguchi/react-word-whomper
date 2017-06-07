@@ -4,7 +4,7 @@ import LetterCard from './LetterCard'
 
 const InputTextDisplay = ({ letters }) => {
   return (
-    <div style={{ minHeight: '105px', background: '#ddd' }}>
+    <div className="InputTextDisplay" style={{ minHeight: '105px', background: '#ddd' }}>
       {
         letters.map((letter, i) => <LetterCard key={i} letter={letter} />)
       }

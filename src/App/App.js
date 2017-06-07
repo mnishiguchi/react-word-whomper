@@ -5,7 +5,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './App.css'
 
 import Layout from './Layout'
-import {AnswerList, InputTextDisplay, LetterSelector} from './components/index'
+
+import {AnswerList, InputTextDisplay, LetterSelector, Timer} from './components/index'
 
 window._ = _ // To play with lodash in console
 
@@ -44,12 +45,17 @@ function sortWords(words=[]) {
   }, [])
 }
 
+const Score = ({ score }) => (
+  <div>Score: {score}</div>
+)
+
 
 class App extends React.PureComponent {
 
   static defaultProps = {
     // Hardcode for now
-    words: ['bed', 'bee', 'deb', 'dew', 'ewe', 'see', 'sew', 'web', 'wed', 'wee', 'beds', 'bees', 'debs', 'ewes', 'seed', 'webs', 'weds', 'weed', 'dweeb', 'sewed', 'weeds', 'dweebs']
+    words: ['bed', 'bee', 'deb', 'dew', 'ewe', 'see', 'sew', 'web', 'wed', 'wee', 'beds', 'bees', 'debs', 'ewes', 'seed', 'webs', 'weds', 'weed', 'dweeb', 'sewed', 'weeds', 'dweebs'],
+    seconds: 120,
   }
 
   constructor(props) {
@@ -58,16 +64,22 @@ class App extends React.PureComponent {
     // Initialize the letter list for the game play based on the words passed in as a prop.
     this.LETTERS = buildLetterList(sortWords(props.words))
 
-    this.state = {
+    this.initialState = {
       words: props.words.map(word => { return { word: word, isVisible: false } }),
       selectedLetters: [],
-      remainingLetters: this.LETTERS
+      remainingLetters: this.LETTERS,
+      score: 0,
     }
 
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onUndo = this.onUndo.bind(this)
-    this.onMix = this.onMix.bind(this)
+    this.state = this.initialState
+
     this.onLetterSelect = this.onLetterSelect.bind(this)
+    this.onMix = this.onMix.bind(this)
+    this.onReset = this.onReset.bind(this)
+    this.onStart = this.onStart.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.onTimeUp = this.onTimeUp.bind(this)
+    this.onUndo = this.onUndo.bind(this)
   }
 
   render() {
@@ -79,6 +91,12 @@ class App extends React.PureComponent {
           <AnswerList words={this.state.words} />
         </section>
         <section>
+          <Score score={this.state.score} />
+          <Timer
+            seconds={this.props.seconds}
+            onTimeUp={this.onTimeUp}
+            ref="timer"
+          />
           <InputTextDisplay letters={this.state.selectedLetters} />
         </section>
         <section>
@@ -89,6 +107,10 @@ class App extends React.PureComponent {
             onUndo={this.onUndo}
             onMix={this.onMix}
           />
+        </section>
+        <section style={{ marginTop: '1rem', display: 'flex' }}>
+          <button className="btn btn-secondary" onClick={this.onReset} style={{ flexGrow: 1 }}>Reset</button>
+          <button className="btn btn-primary" onClick={this.onStart} style={{ flexGrow: 1 }}>Start</button>
         </section>
       </Layout>
     )
@@ -123,7 +145,10 @@ class App extends React.PureComponent {
     const word = this.state.selectedLetters.join('')
     if (this.judgeWord(word)) {
       this.setState((prevState, props) => {
-        return { words: this.updateWords(prevState.words, word) }
+        return {
+          words: this.updateWords(prevState.words, word),
+          score: prevState.score + 1
+        }
       })
     } else {
       alert('NO')
@@ -134,6 +159,22 @@ class App extends React.PureComponent {
       const remainingLetters = this.computeRemainingLetters(selectedLetters)
       return { selectedLetters, remainingLetters }
     })
+  }
+
+  onStart() {
+    this.refs.timer.start() // Directly call a timer's function
+  }
+
+  onReset() {
+    this.setState((prevState, props) => {
+      return { ...this.initialState }
+    })
+
+    this.refs.timer.reset() // Directly call a timer's function
+  }
+
+  onTimeUp() {
+    alert('onTimeUp')
   }
 
   computeRemainingLetters(selectedLetters) {
