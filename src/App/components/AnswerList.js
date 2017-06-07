@@ -1,23 +1,5 @@
 import React from 'react'
 
-// function buildWordLists(words) {
-//   const sortedUpcased = words.sort().reverse().map(word => word.toUpperCase())
-//
-//   const groupedByLength = sortedUpcased.reduce((acc, word) => {
-//     acc[word.length] = [word].concat(acc[word.length])
-//     return acc
-//   }, {})
-//
-//   const lengthList = Object.keys(groupedByLength).sort()
-//
-//   const wordLists = lengthList.reduce((acc, length) => {
-//     acc.push(groupedByLength[length])
-//     return acc
-//   }, [])
-//
-//   return wordLists.map(l => l.filter(e => e)) // filter out undefined elements
-// }
-
 const AnswerWord = ({ word, isVisible }) => {
   return (
     <div style={{

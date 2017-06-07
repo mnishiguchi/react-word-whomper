@@ -9,29 +9,39 @@ import {AnswerList, InputTextDisplay, LetterSelector} from './components/index'
 
 window._ = _ // To play with lodash in console
 
-function buildLetterListFromWords(words) {
+function buildLetterList(words=[]) {
   // A set of chars
-  const charSet = _.uniq(_.flatten(words.map(l => l.split(''))))
+  const charSet = _.uniq(_.flatten(words.map(x => x.split(''))))
 
   // A list of occurrences for all the words
-  const charOccurrences = words.map(word => {
-    return _.countBy(word.split(''))
-  })
+  const charOccurrences = words.map(x => _.countBy(x.split('')))
+
+  const maxOccurrenceOf = (x) => _.maxBy(charOccurrences, x)[x]
 
   // A list of max counts for each letter
-  const charMaxCounts = charSet.map(char => {
-    return [char, _.maxBy(charOccurrences, char)[char]]
-  })
+  const charMaxCounts = charSet.map(x => [x, maxOccurrenceOf(x)])
 
-  // Create a letter list.
-  let letterList = []
-  charMaxCounts.forEach(entry => {
-    for (let i = 0; i < entry[1]; i++) {
-      letterList.push(entry[0])
-    }
-  })
+  // Create a letter list
+  return _.shuffle(
+    charMaxCounts.reduce((acc, entry) => {
+      for (let i = 0; i < entry[1]; i++) { acc.push(entry[0]) }
+      return acc
+    }, [])
+  )
+}
 
-  return _.shuffle(letterList)
+function sortWords(words=[]) {
+  const groupedByLength = words.reduce((acc, word) => {
+                            const len = word.length
+                            acc[len] = [word].concat(acc[len])
+                            return acc
+                          }, {})
+
+  const lengthList = Object.keys(groupedByLength).sort()
+
+  return lengthList.reduce((acc, length) => {
+    return acc.concat(groupedByLength[length].sort()).filter(x => x)
+  }, [])
 }
 
 
@@ -46,7 +56,7 @@ class App extends React.PureComponent {
     super(props)
 
     // Initialize the letter list for the game play based on the words passed in as a prop.
-    this.LETTERS = buildLetterListFromWords(props.words)
+    this.LETTERS = buildLetterList(sortWords(props.words))
 
     this.state = {
       words: props.words.map(word => { return { word: word, isVisible: false } }),
@@ -85,7 +95,7 @@ class App extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.info("updated")
+    console.info('componentDidUpdate')
   }
 
   onLetterSelect(letter) {
@@ -112,8 +122,17 @@ class App extends React.PureComponent {
     })
   }
 
-  // TODO: Trigger the evaluation of the selected word
+  // Trigger the evaluation of the selected word
   onSubmit() {
+    const word = this.state.selectedLetters.join('')
+    if (this.judgeWord(word)) {
+      this.setState((prevState, props) => {
+        return { words: this.updateWords(prevState.words, word) }
+      })
+    } else {
+      alert('NO')
+    }
+
     this.setState((prevState, props) => {
       const selectedLetters = []
       const remainingLetters = this.computeRemainingLetters(selectedLetters)
@@ -130,6 +149,14 @@ class App extends React.PureComponent {
     })
 
     return remainingLetters
+  }
+
+  judgeWord(word) {
+    return this.props.words.find(x => x.toUpperCase() === word.toUpperCase())
+  }
+
+  updateWords(words, word) {
+    return words.map(x => x.word === word ? {...x, isVisible: true} : x)
   }
 }
 

@@ -4,11 +4,8 @@ import Letter from './Letter'
 
 const LetterSelector = ({ letters, onLetterSelect, onMix, onSubmit, onUndo }) => {
   return (
-    <div >
-      <div className="letters" style={{
-        minHeight: '105px',
-        background: '#ddd',
-      }}>
+    <div>
+      <div className="letters" style={{ minHeight: '105px', background: '#ddd' }}>
         {
           letters.map((letter, i) => <Letter key={i} letter={letter} onClick={e => onLetterSelect(letter)} />)
         }
